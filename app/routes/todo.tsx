@@ -34,12 +34,19 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     case 'delete': {
-      const id = formData.get('id');
-      if (typeof id !== 'string' || id.length === 0) {
-        return json({ errors: { title: 'Id is required' } }, { status: 400 });
-      }
+      try {
+        if (Math.random() > 0.5) {
+          throw new Error();
+        }
+        const id = formData.get('id');
+        if (typeof id !== 'string' || id.length === 0) {
+          return json({ errors: { title: 'Id is required' } }, { status: 400 });
+        }
 
-      return await deleteTask(Number(id));
+        return await deleteTask(Number(id));
+      } catch (e) {
+        return json({ errors: true }, { status: 400 });
+      }
     }
 
     default: {
@@ -52,13 +59,13 @@ const TodoPage = () => {
   const todo = useLoaderData<Todo[] | null>();
   const transition = useTransition();
   const isAdding =
-    transition.state === 'submitting' &&
+    transition.submission &&
     transition.submission.formData.get('action') === 'create';
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!isAdding) {
+    if (isAdding) {
       formRef.current?.reset();
       titleRef.current?.focus();
     }
@@ -73,6 +80,12 @@ const TodoPage = () => {
         {todo.map((item) => (
           <TodoItem item={item} key={item.id} />
         ))}
+        {isAdding && (
+          <li>
+            {transition.submission.formData.get('title')}
+            <button disabled>X</button>
+          </li>
+        )}
         <li>
           <Form ref={formRef} replace method="post">
             <input ref={titleRef} type="text" name="title" />
@@ -96,18 +109,19 @@ const TodoItem: FC<{ item: Todo }> = ({ item }) => {
   const isDeleting =
     fetcher.submission?.formData.get('id') === item.id.toString();
 
+  const isFailedDeletion = fetcher.data?.errors;
+
   return (
     <li
       key={item.id}
-      style={{
-        opacity: isDeleting ? 0.25 : 1,
-      }}
+      hidden={isDeleting}
+      style={{ color: isFailedDeletion ? 'red' : '' }}
     >
       {item.title}
       <fetcher.Form replace method="post" style={{ display: 'inline' }}>
         <input type="hidden" name="id" value={item.id} />
         <button type="submit" name="action" value="delete">
-          X
+          {isFailedDeletion ? 'Retry' : 'X'}
         </button>
       </fetcher.Form>
     </li>
