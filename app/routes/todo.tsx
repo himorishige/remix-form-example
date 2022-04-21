@@ -3,8 +3,7 @@ import { json } from '@remix-run/node';
 import { Form, useLoaderData, useTransition } from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 import type { Todo } from '~/models/task.server';
-import { deleteTask } from '~/models/task.server';
-import { createTask, getTaskList } from '~/models/task.server';
+import { createTask, getTaskList, deleteTask } from '~/models/task.server';
 
 export const loader: LoaderFunction = async () => {
   const todo = await getTaskList();
