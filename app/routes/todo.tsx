@@ -53,7 +53,7 @@ const TodoPage = () => {
         {todo.map((item) => (
           <li key={item.id}>
             {item.title}
-            <Form method="post" style={{ display: 'inline' }}>
+            <Form replace method="post" style={{ display: 'inline' }}>
               <input type="hidden" name="id" value={item.id} />
               <button type="submit" name="action" value="delete">
                 X
