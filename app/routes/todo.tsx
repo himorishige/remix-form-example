@@ -20,7 +20,7 @@ export const action: ActionFunction = async ({ request }) => {
   return await createTask(title);
 };
 
-const Index = () => {
+const TodoPage = () => {
   const todo = useLoaderData<Todo[] | null>();
 
   if (!todo) return <div>no items</div>;
@@ -43,4 +43,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default TodoPage;
