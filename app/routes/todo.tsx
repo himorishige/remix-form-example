@@ -1,6 +1,6 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Form, useLoaderData } from '@remix-run/react';
+import { Form, useLoaderData, useTransition } from '@remix-run/react';
 import type { Todo } from '~/models/task.server';
 import { deleteTask } from '~/models/task.server';
 import { createTask, getTaskList } from '~/models/task.server';
@@ -43,6 +43,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 const TodoPage = () => {
   const todo = useLoaderData<Todo[] | null>();
+  const transition = useTransition();
+  const isAdding =
+    transition.state === 'submitting' &&
+    transition.submission.formData.get('action') === 'create';
 
   if (!todo) return <div>no items</div>;
 
@@ -64,8 +68,13 @@ const TodoPage = () => {
         <li>
           <Form replace method="post">
             <input type="text" name="title" />
-            <button type="submit" name="action" value="create">
-              Add
+            <button
+              type="submit"
+              name="action"
+              value="create"
+              disabled={isAdding}
+            >
+              {isAdding ? 'Adding...' : 'Add'}
             </button>
           </Form>
         </li>
