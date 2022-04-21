@@ -52,7 +52,7 @@ const TodoPage = () => {
   const todo = useLoaderData<Todo[] | null>();
   const transition = useTransition();
   const isAdding =
-    transition.state === 'submitting' &&
+    transition.submission &&
     transition.submission.formData.get('action') === 'create';
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
