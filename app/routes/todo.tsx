@@ -44,7 +44,7 @@ const TodoPage = () => {
   const todo = useLoaderData<Todo[] | null>();
   const transition = useTransition();
   const isAdding =
-    transition.state === 'submitting' &&
+    transition.submission &&
     transition.submission.formData.get('action') === 'create';
 
   if (!todo) return <div>no items</div>;
