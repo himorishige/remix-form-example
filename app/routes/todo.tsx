@@ -95,7 +95,7 @@ const TodoPage = () => {
               value="create"
               disabled={isAdding}
             >
-              {isAdding ? 'Adding...' : 'Add'}
+              Add
             </button>
           </Form>
         </li>
