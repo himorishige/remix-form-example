@@ -44,7 +44,10 @@ export const action: ActionFunction = async ({ request }) => {
 
         return await deleteTask(Number(id));
       } catch (e) {
-        return json({ errors: true }, { status: 400 });
+        return json(
+          { errors: { title: 'Something went wrong' } },
+          { status: 400 }
+        );
       }
     }
 
