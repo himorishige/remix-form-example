@@ -1,6 +1,12 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Form, useLoaderData, useTransition } from '@remix-run/react';
+import {
+  Form,
+  useFetcher,
+  useLoaderData,
+  useTransition,
+} from '@remix-run/react';
+import type { FC } from 'react';
 import { useEffect, useRef } from 'react';
 import type { Todo } from '~/models/task.server';
 import { deleteTask } from '~/models/task.server';
@@ -65,15 +71,7 @@ const TodoPage = () => {
       <h1>TODO</h1>
       <ul>
         {todo.map((item) => (
-          <li key={item.id}>
-            {item.title}
-            <Form replace method="post" style={{ display: 'inline' }}>
-              <input type="hidden" name="id" value={item.id} />
-              <button type="submit" name="action" value="delete">
-                X
-              </button>
-            </Form>
-          </li>
+          <TodoItem item={item} key={item.id} />
         ))}
         <li>
           <Form ref={formRef} replace method="post">
@@ -90,6 +88,29 @@ const TodoPage = () => {
         </li>
       </ul>
     </main>
+  );
+};
+
+const TodoItem: FC<{ item: Todo }> = ({ item }) => {
+  const fetcher = useFetcher();
+  const isDeleting =
+    fetcher.submission?.formData.get('id') === item.id.toString();
+
+  return (
+    <li
+      key={item.id}
+      style={{
+        opacity: isDeleting ? 0.25 : 1,
+      }}
+    >
+      {item.title}
+      <fetcher.Form replace method="post" style={{ display: 'inline' }}>
+        <input type="hidden" name="id" value={item.id} />
+        <button type="submit" name="action" value="delete">
+          X
+        </button>
+      </fetcher.Form>
+    </li>
   );
 };
 
