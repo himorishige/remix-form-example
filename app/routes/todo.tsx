@@ -1,6 +1,11 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Form, useLoaderData, useTransition } from '@remix-run/react';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useTransition,
+} from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 import type { Todo } from '~/models/task.server';
 import { createTask, getTaskList, deleteTask } from '~/models/task.server';
@@ -19,7 +24,7 @@ export const action: ActionFunction = async ({ request }) => {
       if (typeof title !== 'string' || title.length === 0) {
         return json(
           { errors: { title: 'Title is required' } },
-          { status: 400 }
+          { status: 422 }
         );
       }
 
@@ -29,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
     case 'delete': {
       const id = formData.get('id');
       if (typeof id !== 'string' || id.length === 0) {
-        return json({ errors: { title: 'Id is required' } }, { status: 400 });
+        return json({ errors: { title: 'Id is required' } }, { status: 422 });
       }
 
       return await deleteTask(Number(id));
@@ -43,6 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 const TodoPage = () => {
   const todo = useLoaderData<Todo[] | null>();
+  const actionData = useActionData<{ errors: { title: string } }>();
   const transition = useTransition();
   const isAdding =
     transition.state === 'submitting' &&
@@ -87,6 +93,7 @@ const TodoPage = () => {
             </button>
           </Form>
         </li>
+        {actionData?.errors && <span>{actionData.errors.title}</span>}
       </ul>
     </main>
   );
